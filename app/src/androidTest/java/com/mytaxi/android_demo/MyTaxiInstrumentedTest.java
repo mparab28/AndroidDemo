@@ -58,7 +58,7 @@ public class MyTaxiInstrumentedTest {
     }
 
     @Test
-    public void shouldLoginToAppAndSearchForDriver() throws InterruptedException {
+    public void shouldLoginAndSearchForDriverToCall() throws InterruptedException {
 
         // find login page fields, validate and perform actions (enter text and click on button)
         onView(withId(R.id.edt_username)).check(matches(isEnabled())).perform(typeText(USER_NAME));
