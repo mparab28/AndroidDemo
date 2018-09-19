@@ -22,6 +22,7 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 @RunWith(AndroidJUnit4.class)
 public class MyTaxiInstrumentedTest {
@@ -38,10 +39,16 @@ public class MyTaxiInstrumentedTest {
 
 
     @Test
-    public void shouldLoginToApp() throws InterruptedException {
+    public void shouldLoginToAppAndSearchForDriver() throws InterruptedException {
+        // find login page fields, validate and perform actions (enter text and click on button)
         onView(withId(R.id.edt_username)).check(matches(isEnabled())).perform(typeText(USER_NAME));
         onView(withId(R.id.edt_password)).check(matches(isEnabled())).perform(typeText(PASSWORD), closeSoftKeyboard());
         onView(withId(R.id.btn_login)).check(matches(isClickable())).perform(click());
+
+        TimeUnit.SECONDS.sleep(3); // wait for application to navigate to next page
+
+        onView(withId(R.id.textSearch)).check(matches(isEnabled())).perform(typeText(SEARCH_STRING));
+        onView(withId(R.id.searchContainer)).check(matches(withText("Sarah Scott"))).perform(click());
 
         TimeUnit.SECONDS.sleep(2); // wait to manually validate the successful login
     }
