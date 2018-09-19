@@ -45,7 +45,7 @@ public class MyTaxiInstrumentedTest {
     private static final String DRIVER_NAME = "Sarah Scott";
 
     @Rule // create the main activity rule to initialize the application
-    public ActivityTestRule<MainActivity> mainActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+    public ActivityTestRule<MainActivity> mainActivityTestRule = new ActivityTestRule<>(MainActivity.class, true, false);
 
     @Rule // below rule automatically grants permission on location service for the app; thereby disabling the system popup
     public GrantPermissionRule grantPermissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
@@ -54,6 +54,7 @@ public class MyTaxiInstrumentedTest {
     public void cleanupStorage() {
         SharedPrefStorage sharedPrefStorage = new SharedPrefStorage(getInstrumentation().getTargetContext());
         sharedPrefStorage.resetUser();
+        mainActivityTestRule.launchActivity(null);
     }
 
     @Test
@@ -79,9 +80,11 @@ public class MyTaxiInstrumentedTest {
 
     // Returns the driver from DriverAdapter List based on the name that is passed in method parameters
     private static DataInteraction onDriverSearch(final String driverName) {
-        //return onData(allOf(is(instanceOf(Driver.class)))).inRoot(RootMatchers.isPlatformPopup()).atPosition(1);
+        //mName is the property name under which driver's name is stored in Driver class
         return onData(allOf(is(instanceOf(Driver.class)), hasPropertyAndroid("mName", equalTo(driverName))))
                 .inRoot(RootMatchers.isPlatformPopup());
+
+        //return onData(allOf(is(instanceOf(Driver.class)))).inRoot(RootMatchers.isPlatformPopup()).atPosition(1);
     }
 
 }
