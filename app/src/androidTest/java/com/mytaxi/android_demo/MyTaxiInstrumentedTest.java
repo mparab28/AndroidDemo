@@ -29,6 +29,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.mytaxi.android_demo.util.AndroidHasProperty.hasPropertyAndroid;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -66,9 +67,12 @@ public class MyTaxiInstrumentedTest {
         TimeUnit.SECONDS.sleep(3); // wait for application to navigate to next page
 
         // enter text('sa') in search text field and then click on driver searching it through the name ('Sarah Scott')
-        onView(withId(R.id.textSearch)).check(matches(isEnabled())).perform(typeText(SEARCH_TEXT));
+        onView(withId(R.id.textSearch)).check(matches(isEnabled())).perform(typeText(SEARCH_TEXT), closeSoftKeyboard());
         onDriverSearch(DRIVER_NAME).check(matches(isDisplayed())).perform(click());
 
+        // validate if the correct driver profile is opened and then click on call button on driver profile activity
+        onView(withId(R.id.textViewDriverName)).check(matches(isDisplayed())).check(matches(withText(DRIVER_NAME)));
+        onView(withId(R.id.fab)).check(matches(isClickable())).perform(click());
 
         TimeUnit.SECONDS.sleep(2); // wait to manually validate the final step on emulator
     }
