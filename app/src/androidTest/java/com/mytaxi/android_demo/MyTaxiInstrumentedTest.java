@@ -1,11 +1,14 @@
 package com.mytaxi.android_demo;
 
 import android.Manifest;
+import android.support.test.espresso.DataInteraction;
+import android.support.test.espresso.matcher.RootMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.mytaxi.android_demo.activities.MainActivity;
+import com.mytaxi.android_demo.models.Driver;
 import com.mytaxi.android_demo.utils.storage.SharedPrefStorage;
 
 import org.junit.Before;
@@ -17,6 +20,7 @@ import java.security.acl.Permission;
 import java.util.concurrent.TimeUnit;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -26,6 +30,9 @@ import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 
 @RunWith(AndroidJUnit4.class)
 public class MyTaxiInstrumentedTest {
@@ -56,9 +63,14 @@ public class MyTaxiInstrumentedTest {
         TimeUnit.SECONDS.sleep(3); // wait for application to navigate to next page
 
         onView(withId(R.id.textSearch)).check(matches(isEnabled())).perform(typeText(SEARCH_TEXT));
-        onView(withId(R.id.searchContainer)).check(matches(withText("Sarah Scott"))).perform(click());
+        onDriverSearch().check(matches(withText("Sarah Scott"))).perform(click());
 
         TimeUnit.SECONDS.sleep(2); // wait to manually validate the successful login
+    }
+
+    // Returns the 2nd driver from DriverAdapter List
+    private static DataInteraction onDriverSearch() {
+        return onData(allOf(is(instanceOf(Driver.class)))).inRoot(RootMatchers.isPlatformPopup()).atPosition(1);
     }
 
 }
