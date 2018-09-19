@@ -6,7 +6,9 @@ import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.mytaxi.android_demo.activities.MainActivity;
+import com.mytaxi.android_demo.utils.storage.SharedPrefStorage;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +16,7 @@ import org.junit.runner.RunWith;
 import java.security.acl.Permission;
 import java.util.concurrent.TimeUnit;
 
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -29,7 +32,7 @@ public class MyTaxiInstrumentedTest {
 
     private static final String USER_NAME = "crazydog335";
     private static final String PASSWORD = "venture";
-    private static final String SEARCH_STRING = "sa";
+    private static final String SEARCH_TEXT = "sa";
 
     @Rule // create the main activity rule to initialize the application
     public ActivityTestRule<MainActivity> mainActivityTestRule = new ActivityTestRule<>(MainActivity.class);
@@ -37,6 +40,11 @@ public class MyTaxiInstrumentedTest {
     @Rule // below rule automatically grants permission on location service for the app; thereby disabling the system popup
     public GrantPermissionRule grantPermissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
 
+    @Before // ensure application always starts in a clean state (from login page)
+    public void cleanupStorage() {
+        SharedPrefStorage sharedPrefStorage = new SharedPrefStorage(getInstrumentation().getTargetContext());
+        sharedPrefStorage.resetUser();
+    }
 
     @Test
     public void shouldLoginToAppAndSearchForDriver() throws InterruptedException {
@@ -47,7 +55,7 @@ public class MyTaxiInstrumentedTest {
 
         TimeUnit.SECONDS.sleep(3); // wait for application to navigate to next page
 
-        onView(withId(R.id.textSearch)).check(matches(isEnabled())).perform(typeText(SEARCH_STRING));
+        onView(withId(R.id.textSearch)).check(matches(isEnabled())).perform(typeText(SEARCH_TEXT));
         onView(withId(R.id.searchContainer)).check(matches(withText("Sarah Scott"))).perform(click());
 
         TimeUnit.SECONDS.sleep(2); // wait to manually validate the successful login
