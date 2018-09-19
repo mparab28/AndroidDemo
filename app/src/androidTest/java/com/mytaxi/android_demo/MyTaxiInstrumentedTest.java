@@ -1,6 +1,8 @@
 package com.mytaxi.android_demo;
 
+import android.Manifest;
 import android.support.test.rule.ActivityTestRule;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.mytaxi.android_demo.activities.MainActivity;
@@ -9,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.security.acl.Permission;
 import java.util.concurrent.TimeUnit;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -27,8 +30,12 @@ public class MyTaxiInstrumentedTest {
     private static final String PASSWORD = "venture";
     private static final String SEARCH_STRING = "sa";
 
-    @Rule
+    @Rule // create the main activity rule to initialize the application
     public ActivityTestRule<MainActivity> mainActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+
+    @Rule // below rule automatically grants permission on location service for the app; thereby disabling the system popup
+    public GrantPermissionRule grantPermissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
+
 
     @Test
     public void shouldLoginToApp() throws InterruptedException {
