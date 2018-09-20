@@ -16,6 +16,7 @@ import android.widget.EditText;
 import com.mytaxi.android_demo.App;
 import com.mytaxi.android_demo.R;
 import com.mytaxi.android_demo.dependencies.component.AppComponent;
+import com.mytaxi.android_demo.utils.MyTaxiIdlingResource;
 import com.mytaxi.android_demo.utils.network.HttpClient;
 import com.mytaxi.android_demo.utils.storage.SharedPrefStorage;
 
@@ -67,6 +68,7 @@ public class AuthenticationActivity extends AppCompatActivity {
     private void attemptLogin() {
         final String username = mEditTextUsername.getText().toString();
         final String password = mEditTextPassword.getText().toString();
+        MyTaxiIdlingResource.increment();
         mHttpClient.fetchUser(RANDOM_USER_SEED, new HttpClient.UserCallback() {
             @Override
             public void run() {
@@ -79,6 +81,9 @@ public class AuthenticationActivity extends AppCompatActivity {
                     View view = findViewById(android.R.id.content);
                     Snackbar.make(view, R.string.message_login_fail, Snackbar.LENGTH_LONG).show();
                     Log.i(LOG_TAG, "Failed login with user: " + username);
+                }
+                if(!MyTaxiIdlingResource.isIdleNow()) { // decrement only when idlingResource is not idle
+                    MyTaxiIdlingResource.decrement();
                 }
             }
         });

@@ -33,6 +33,7 @@ import com.mytaxi.android_demo.R;
 import com.mytaxi.android_demo.adapters.DriverAdapter;
 import com.mytaxi.android_demo.dependencies.component.AppComponent;
 import com.mytaxi.android_demo.models.Driver;
+import com.mytaxi.android_demo.utils.MyTaxiIdlingResource;
 import com.mytaxi.android_demo.utils.PermissionHelper;
 import com.mytaxi.android_demo.utils.network.HttpClient;
 import com.mytaxi.android_demo.utils.storage.SharedPrefStorage;
@@ -114,6 +115,7 @@ public class MainActivity extends AuthenticatedActivity
 
         mSearchView = findViewById(R.id.textSearch);
         mSearchView.setDropDownAnchor(R.id.searchContainer);
+        MyTaxiIdlingResource.increment();
         mHttpClient.fetchDrivers(new HttpClient.DriverCallback() {
             @Override
             public void run() {
@@ -127,6 +129,9 @@ public class MainActivity extends AuthenticatedActivity
                     @Override
                     public void run() {
                         mSearchView.setAdapter(mAdapter);
+                        if(!MyTaxiIdlingResource.isIdleNow()) { // decrement only when idlingResource is not in idle state
+                            MyTaxiIdlingResource.decrement();
+                        }
                     }
                 });
             }

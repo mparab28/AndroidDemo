@@ -2,6 +2,8 @@ package com.mytaxi.android_demo;
 
 import android.Manifest;
 import android.support.test.espresso.DataInteraction;
+import android.support.test.espresso.IdlingRegistry;
+import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.matcher.RootMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.rule.GrantPermissionRule;
@@ -9,8 +11,10 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.mytaxi.android_demo.activities.MainActivity;
 import com.mytaxi.android_demo.models.Driver;
+import com.mytaxi.android_demo.utils.MyTaxiIdlingResource;
 import com.mytaxi.android_demo.utils.storage.SharedPrefStorage;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,7 +46,7 @@ public class MyTaxiInstrumentedTest {
     private static final String USER_NAME = "crazydog335";
     private static final String PASSWORD = "venture";
     private static final String SEARCH_TEXT = "sa";
-    private static final String DRIVER_NAME = "Sarah Scott";
+    private static final String DRIVER_NAME = "Sarah Scott"; // second driver on the autocomplete suggestion list
 
     @Rule // create the main activity rule to initialize the application
     public ActivityTestRule<MainActivity> mainActivityTestRule = new ActivityTestRule<>(MainActivity.class, true, false);
@@ -57,15 +61,21 @@ public class MyTaxiInstrumentedTest {
         mainActivityTestRule.launchActivity(null);
     }
 
+    @Before // register idlingResource; this is to avoid having Thread.sleep as synchronization
+    public void registerIdlingResource() {
+        IdlingRegistry.getInstance().register(MyTaxiIdlingResource.getIdlingResource());
+    }
+
     @Test
-    public void shouldLoginAndSearchForDriverToCall() throws InterruptedException {
+    public void shouldLoginAndSearchForDriverToCall() {
 
         // find login page fields, validate and perform actions (enter text and click on button)
         onView(withId(R.id.edt_username)).check(matches(isEnabled())).perform(typeText(USER_NAME));
         onView(withId(R.id.edt_password)).check(matches(isEnabled())).perform(typeText(PASSWORD), closeSoftKeyboard());
         onView(withId(R.id.btn_login)).check(matches(isClickable())).perform(click());
 
-        TimeUnit.SECONDS.sleep(3); // wait for application to navigate to next page
+        // this is no more required since we are synchronizing using idlingResource
+        //TimeUnit.SECONDS.sleep(3); // wait for application to navigate to next page
 
         // enter text('sa') in search text field and then click on driver searching it through the name ('Sarah Scott')
         onView(withId(R.id.textSearch)).check(matches(isEnabled())).perform(typeText(SEARCH_TEXT), closeSoftKeyboard());
@@ -74,8 +84,6 @@ public class MyTaxiInstrumentedTest {
         // validate if the correct driver profile is opened and then click on call button on driver profile activity
         onView(withId(R.id.textViewDriverName)).check(matches(isDisplayed())).check(matches(withText(DRIVER_NAME)));
         onView(withId(R.id.fab)).check(matches(isClickable())).perform(click());
-
-        TimeUnit.SECONDS.sleep(2); // wait to manually validate the final step on emulator
     }
 
     // Returns the driver from DriverAdapter List based on the name that is passed in method parameters
@@ -85,6 +93,11 @@ public class MyTaxiInstrumentedTest {
                 .inRoot(RootMatchers.isPlatformPopup());
 
         //return onData(allOf(is(instanceOf(Driver.class)))).inRoot(RootMatchers.isPlatformPopup()).atPosition(1);
+    }
+
+    @After // unregister idlingResource on test completion
+    public void unregisterIdlingResource() {
+        IdlingRegistry.getInstance().unregister(MyTaxiIdlingResource.getIdlingResource());
     }
 
 }
