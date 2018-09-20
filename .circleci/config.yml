@@ -36,7 +36,5 @@ jobs:
           name: Instrumented Test
           command: ./gradlew connectedAndroidTest
       - store_artifacts:
-          path: app/build/reports/androidTests/connected
+          path: app/build/reports
           destination: reports
-      - store_test_results:
-          path: app/build/androidTest-results/connected
