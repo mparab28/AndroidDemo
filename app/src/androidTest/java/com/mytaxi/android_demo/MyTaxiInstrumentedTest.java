@@ -14,6 +14,7 @@ import com.mytaxi.android_demo.models.Driver;
 import com.mytaxi.android_demo.utils.MyTaxiIdlingResource;
 import com.mytaxi.android_demo.utils.storage.SharedPrefStorage;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -56,6 +57,8 @@ public class MyTaxiInstrumentedTest {
 
     @Before // ensure application always starts in a clean state (from login page)
     public void cleanupStorage() {
+        // Done to handle already logged in user issue
+        // First approach was handling by try catch
         SharedPrefStorage sharedPrefStorage = new SharedPrefStorage(getInstrumentation().getTargetContext());
         sharedPrefStorage.resetUser();
         mainActivityTestRule.launchActivity(null);
@@ -88,11 +91,14 @@ public class MyTaxiInstrumentedTest {
 
     // Returns the driver from DriverAdapter List based on the name that is passed in method parameters
     private static DataInteraction onDriverSearch(final String driverName) {
-        //mName is the property name under which driver's name is stored in Driver class
+
+        // return onData(is(instanceOf(Driver.class))).inRoot(RootMatchers.isPlatformPopup()).atPosition(1);
+
+        // First approach used-Matchers.hasProperty()
+        // Gave Exception-- * 'java.lang.NoClassDefFoundError: Failed resolution of: Ljava/beans/Introspector;'
+        // mName is the property name under which driver's name is stored in Driver class
         return onData(allOf(is(instanceOf(Driver.class)), hasPropertyAndroid("mName", equalTo(driverName))))
                 .inRoot(RootMatchers.isPlatformPopup());
-
-        //return onData(allOf(is(instanceOf(Driver.class)))).inRoot(RootMatchers.isPlatformPopup()).atPosition(1);
     }
 
     @After // unregister idlingResource on test completion

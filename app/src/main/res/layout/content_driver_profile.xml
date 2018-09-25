@@ -35,12 +35,14 @@
                 android:id="@+id/textViewDriverName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/text_widget_margin"
+                android:layout_marginTop="16dp"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
-                android:layout_margin="@dimen/text_widget_margin"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/imageViewDriverAvatar"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/imageViewDriverLocation"

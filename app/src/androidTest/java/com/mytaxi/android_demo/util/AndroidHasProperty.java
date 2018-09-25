@@ -43,8 +43,8 @@ public class AndroidHasProperty<T> extends TypeSafeMatcher<T> {
             return valueMatcher.matches(value);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             Log.w("Custom matcher error", "No matching field found with property name: " + propertyName);
+            return false;
         }
-        return false;
     }
 
     @Override
